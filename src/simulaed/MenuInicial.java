@@ -29,7 +29,11 @@ public final class MenuInicial extends javax.swing.JFrame {
                 String s = JOptionPane.showInputDialog("Tamanho da Lista:");
                 if(s == null || s.equals(""))
                     return;                
-                tam = Integer.parseInt(s);
+                try{
+                    tam = Integer.parseInt(s);
+                } catch(NumberFormatException ex){
+                    return;
+                }
                 JanelaListaSeq janela = new JanelaListaSeq(MenuInicial.this, true, tam);                
                 janela.setVisible(true);
             }
@@ -42,10 +46,31 @@ public final class MenuInicial extends javax.swing.JFrame {
                 String s = JOptionPane.showInputDialog("Tamanho da Pilha:");
                 if(s == null || s.equals(""))
                     return;                
-                tam = Integer.parseInt(s);
+                try{
+                    tam = Integer.parseInt(s);
+                } catch(NumberFormatException ex){
+                    return;
+                }
                 JanelaPilhaSeq janela = new JanelaPilhaSeq(MenuInicial.this, true, tam);
                 janela.setVisible(true);
                 
+            }
+        });
+        
+        btnFila.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int tam;
+                String s = JOptionPane.showInputDialog("Tamanho da Lista:");
+                if(s == null || s.equals(""))
+                    return;
+                try{
+                    tam = Integer.parseInt(s);
+                } catch(NumberFormatException ex){
+                    return;
+                }
+                JanelaFilaSeq janela = new JanelaFilaSeq(MenuInicial.this, true, tam);
+                janela.setVisible(true);
             }
         });
     }
