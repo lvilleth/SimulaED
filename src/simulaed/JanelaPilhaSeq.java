@@ -25,7 +25,7 @@ public final class JanelaPilhaSeq extends javax.swing.JDialog {
     Border bordaVermelha = BorderFactory.createLineBorder(Color.RED, 2);
     Border bordaAmarela  = BorderFactory.createLineBorder(Color.YELLOW, 2);
     Border bordaVazia    = BorderFactory.createEmptyBorder();
-    Border bordaPreta    = BorderFactory.createLineBorder(Color.GRAY, 2);
+    Border bordaCinza    = BorderFactory.createLineBorder(Color.GRAY, 2);
     
     boolean cor;
     final int DELAY = 2000;
@@ -60,7 +60,7 @@ public final class JanelaPilhaSeq extends javax.swing.JDialog {
             blocos.add(b);
             //b.setVisible(false);
             b.setContentAreaFilled(false);
-            b.setBorder(bordaPreta);
+            b.setBorder(bordaCinza);
             b.setEnabled(false);
         }
     }
@@ -126,7 +126,7 @@ public final class JanelaPilhaSeq extends javax.swing.JDialog {
                    }
                    Bloco post = blocos.get(top);
                    //post.setBorder(bordaVazia);
-                   post.setBorder(bordaPreta);
+                   post.setBorder(bordaCinza);
                    post.setContentAreaFilled(false);
                    post.setEnabled(false);
                    

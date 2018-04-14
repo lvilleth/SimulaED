@@ -50,10 +50,13 @@ public class ListaSeq {
         return -1;
     }
     
-    public boolean insere (int pos, int dado){
+    public boolean insere (int pos, int dado) throws Exception{
         
-        if (cheia() || (pos > nElementos+1) || (pos <=0)){            
-            return false;
+        if (cheia())
+            throw new Exception("Lista cheia.");
+        
+        if ((pos > nElementos+1) || (pos <=0)){            
+            throw new Exception("Posiçao invalida.");
         }
 
         /* Desloca os elementos após pos, uma posicao a

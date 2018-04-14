@@ -25,6 +25,7 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
     Border bordaVermelha = BorderFactory.createLineBorder(Color.RED, 2);
     Border bordaAmarela  = BorderFactory.createLineBorder(Color.YELLOW, 2);
     Border bordaVazia    = BorderFactory.createEmptyBorder();
+    Border bordaCinza    = BorderFactory.createLineBorder(Color.GRAY, 2);
     
     boolean cor;
     final int DELAY = 2000;
@@ -60,6 +61,9 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
             b.setLocation(x + ((b.getSize().width + 5)*i), y);
             canvas.add(b);  
             blocos.add(b);
+            b.setContentAreaFilled(false);
+            b.setBorder(bordaCinza);
+            b.setEnabled(false);
         }
     }    
     
@@ -81,43 +85,22 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
                 if(s.equals("") || v.equals(""))                    
                     return;
                 
-                int valor = Integer.parseInt(v);
-                int pos = Integer.parseInt(s);
-                                
-                boolean ok = lista.insere(pos, valor);
-                lblResultado.setText(""+ok);
-                
-                if(ok){                
-                    // Arrasta os valores dos blocos para direita
-                    Bloco c;                    
-                    for (int i = pos; i < lista.tamanho(); i++) {
-                        try {
-                            c = blocos.get(i);
-                            c.setValor(lista.elemento(i+1));
-                            c.setBorder(bordaAmarela);                                    
-                        } catch (Exception ex) {
-
-                        }
-                    }                    
-                    ////////////////////////////////////////////////
-                                        
-                    // Preenche o valor do bloco depois de determinado DELAY                    
-                    Bloco b = blocos.get(pos-1);                                                                                
-                    Timer t = new Timer(DELAY, new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {                            
-                            b.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2));
-                            b.setValor(valor);                                                            
-                            cor = true;
-                        }
-                    });
-                    t.setRepeats(false);                    
-                    if(lista.tamanho() == 1)
-                        t.setInitialDelay(0);
-                    t.start();                    
-                    ////////////////////////////////////////////////
+                boolean ok = false;
+                try {
+                    int valor = Integer.parseInt(v);
+                    int pos = Integer.parseInt(s);
+                    ok = lista.insere(pos, valor);                    
+                    
+                    simulaInsercao(pos, valor, DELAY);
+                    
+                    //lblResultado.setText(""+ok);                
+                    lblNElementos.setText(""+lista.tamanho());                
+                    
+                } catch (NumberFormatException ex){
+                    JOptionPane.showMessageDialog(rootPane, "Numero invalido.");                    
+                }catch (Exception ex) {
+                    JOptionPane.showMessageDialog(rootPane, ex.getMessage());                                        
                 }
-                lblNElementos.setText(""+lista.tamanho());                
             }
         });
     
@@ -137,39 +120,17 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
                 if(s.equals(""))
                     return;                                
                 
-                int pos = Integer.parseInt(s);                
-                
                 try {
+                    int pos = Integer.parseInt(s);
                     valor = lista.remove(pos);                    
                     
-                    final Bloco b = blocos.get(pos-1);
-                    b.setBorder(bordaVermelha);                       
-                    
-                    // Arrasta os valores dos blocos para a esquerda depois de determinado DELAY
-                    Timer t = new Timer(DELAY, new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            b.setBorder(bordaVazia);
-                            Bloco c;
-                            for (int i = pos-1; i < lista.tamanho(); i++) {
-                                c = blocos.get(i);
-                                try {
-                                    c.setValor(lista.elemento(i+1));
-                                    c.setBorder(bordaAmarela);
-                                } catch (Exception ex) {
-                                    JOptionPane.showMessageDialog(rootPane, ex.getMessage());
-                                }
-                            }
-                            cor = true;
-                        }
-                    });
-                    t.setRepeats(false);
-                    t.start();
-                    ////////////////////////////////////////////////
+                    simulaRemocao(pos,DELAY);
                     
                     lblResultado.setText(""+valor);
                     lblNElementos.setText(""+lista.tamanho());
                     
+                }catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPane, "Numero invalido.");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(rootPane, ex.getMessage());
                 }
@@ -191,7 +152,9 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
                         buscarPosicao();                
                     else if(radioValor.isSelected())
                         buscarValor();                    
-                } catch (Exception ex) {
+                }catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(rootPane, "Numero invalido.");
+                }catch (Exception ex) {
                     JOptionPane.showMessageDialog(rootPane, ex.getMessage());                
                 }
             }
@@ -223,9 +186,90 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
         });
     }
     
+    
+    private void simulaRemocao(int pos, int mili){       
+        final Bloco b = blocos.get(pos-1);
+        b.setBorder(bordaVermelha);                       
+        
+        // Remove a borda e arrasta os valores dos blocos para a esquerda
+        // depois de determinado DELAY
+        Timer t = new Timer(mili, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {                
+                
+                b.setBorder(bordaVazia);
+                
+                Bloco c;
+                for (int i = pos-1; i < lista.tamanho(); i++) {
+                    c = blocos.get(i);
+                    try {
+                        c.setValor(lista.elemento(i+1));
+                        c.setBorder(bordaAmarela);
+                    } catch (Exception ex) {
+                        JOptionPane.showMessageDialog(rootPane, ex.getMessage());
+                    }
+                }
+                cor = true;                            
+
+                Bloco ultimo = blocos.get(lista.tamanho());
+                ultimo.setBorder(bordaCinza);
+                ultimo.setEnabled(false);
+                ultimo.setContentAreaFilled(false);
+            }
+        });
+        t.setRepeats(false);
+        t.start();    
+    }    
+    
+    private void simulaInsercao(int pos, int valor, int mili){
+        atualizaDireita(pos);
+        preencheBloco(pos, valor, mili, bordaVerde);
+    }
+    
+    /**
+    * Preenche o valor do bloco que representa a posicao "pos" 
+    * depois de determinado DELAY
+    */
+    private void preencheBloco(int pos, int valor, int mili, Border borda){    
+        Bloco b = blocos.get(pos-1);                                                                                
+        Timer t = new Timer(mili, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {                            
+                b.setBorder(borda);
+                b.setValor(valor);
+                b.setContentAreaFilled(true);
+                b.setEnabled(true);
+                cor = true;
+            }
+        });
+        t.setRepeats(false);                    
+        if((lista.tamanho() == 1) || (pos == lista.tamanho()))
+            t.setInitialDelay(0);
+        t.start();                        
+    }
+    
+    /**
+    * Atualiza os valores e visual dos blocos a direita da posicao que se
+    * deseja inserir
+    */
+    private void atualizaDireita(int pos){                
+        Bloco c;                    
+        for (int i = pos; i < lista.tamanho(); i++) {
+            try {
+                c = blocos.get(i);
+                c.setValor(lista.elemento(i+1));
+                c.setBorder(bordaAmarela);
+                c.setContentAreaFilled(true);
+                c.setEnabled(true);
+            } catch (Exception ex) { /* ... */}
+        }                    
+    }
+    
     private void removerBorda(){
         for (Bloco b : blocos) {
-            b.setBorder(bordaVazia);
+            if(b.getBorder() != bordaCinza){
+                b.setBorder(bordaVazia);
+            }
         }
         cor = false;
     }
@@ -255,6 +299,7 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
         radioPos = new javax.swing.JRadioButton();
         radioValor = new javax.swing.JRadioButton();
         lblBusca = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -293,13 +338,12 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(canvasLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(lblResultado)
                     .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblelem)
-                        .addComponent(lblNElementos))
-                    .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jLabel1)
-                        .addComponent(lblResultado)))
+                        .addComponent(lblNElementos)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -313,6 +357,8 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
 
         lblBusca.setFont(new java.awt.Font("Arimo", 0, 36)); // NOI18N
         lblBusca.setText("---");
+
+        jLabel2.setText("Busca:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -337,10 +383,12 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(radioValor)
-                        .addGap(49, 49, 49)
-                        .addComponent(lblBusca))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 57, Short.MAX_VALUE)
+                        .addComponent(jLabel2))
                     .addComponent(radioPos))
-                .addContainerGap(75, Short.MAX_VALUE))
+                .addGap(12, 12, 12)
+                .addComponent(lblBusca)
+                .addGap(17, 17, 17))
             .addComponent(canvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
@@ -352,7 +400,9 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
                         .addComponent(radioPos)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(radioValor))
-                    .addComponent(lblBusca))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblBusca)
+                        .addComponent(jLabel2)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(canvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
@@ -379,6 +429,7 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
     private javax.swing.JButton btnRemover;
     private javax.swing.JPanel canvas;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblBusca;
     private javax.swing.JLabel lblNElementos;
     private javax.swing.JLabel lblPosicao;
