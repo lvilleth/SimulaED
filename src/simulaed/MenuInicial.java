@@ -34,6 +34,20 @@ public final class MenuInicial extends javax.swing.JFrame {
                 janela.setVisible(true);
             }
         });
+        
+        btnPilha.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                int tam;
+                String s = JOptionPane.showInputDialog("Tamanho da Pilha:");
+                if(s == null || s.equals(""))
+                    return;                
+                tam = Integer.parseInt(s);
+                JanelaPilhaSeq janela = new JanelaPilhaSeq(MenuInicial.this, true, tam);
+                janela.setVisible(true);
+                
+            }
+        });
     }
 
     /**
