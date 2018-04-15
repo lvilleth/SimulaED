@@ -3,6 +3,7 @@ package simulaed;
 import com.sun.glass.events.KeyEvent;
 import estruturas.LSE;
 import java.awt.Color;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -17,20 +18,23 @@ import javax.swing.border.Border;
  *
  * @author jayme
  */
-public class JanelaLSE extends javax.swing.JDialog {
+public final class JanelaLSE extends javax.swing.JDialog {
     
     LSE lista;
     ArrayList<Bloco> blocos;
     
-    Border bordaVerde = BorderFactory.createLineBorder(Color.GREEN, 2); //Foi inserido.
-    Border bordaAmarela = BorderFactory.createLineBorder(Color.YELLOW, 2); //Cursor.
-    Border bordaVazia = BorderFactory.createEmptyBorder(); //Tira borda.
+    Border bordaVerde = BorderFactory.createLineBorder(Color.GREEN, 2);
+    Border bordaAmarela = BorderFactory.createLineBorder(Color.YELLOW, 2);
+    Border bordaVazia = BorderFactory.createEmptyBorder(); 
+    Border bordaVermelha = BorderFactory.createLineBorder(Color.RED, 2);
     
     boolean cor;
     final int DELAY = 1500;
-    ImageIcon image = new ImageIcon("seta2.png");
-    JLabel seta[] = new JLabel[20];   
-        
+    ImageIcon image = new ImageIcon("seta2.png");    
+    ArrayList<JLabel> setas;
+    
+    int Ybloco;        
+    int Yseta;
         
     public JanelaLSE(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -38,15 +42,104 @@ public class JanelaLSE extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         
         lista = new LSE();
-        blocos = new ArrayList<>();
+        blocos = new ArrayList<>(10);
+        setas = new ArrayList<>(10);
+        
+        Ybloco  = canvas.getSize().height;
+        Ybloco /=2;
+        Ybloco -= canvas.getY();
+        
+        Yseta = image.getIconHeight()/2;
         
         lblElementos.setText("0");
         lblBusca.setBorder(BorderFactory.createLineBorder(Color.black, 1));
         
         buttonGroup1.add(radioPosicao);
-        buttonGroup1.add(radioValor);
-           
-      
+        buttonGroup1.add(radioValor);        
+    }
+    
+    private void moveBlocosDireita(int pos, int dx){        
+        Bloco b;
+        Point location;
+        for (int i = pos; i < blocos.size(); i++) {
+            b = blocos.get(i);
+            location = b.getLocation();            
+            location.translate(dx, 0);
+            b.setLocation(location);
+        }    
+    }
+    
+    private void insereMeio(Bloco b, int pos){
+        int larguraSeta = image.getIconWidth();
+        int larguraBloco = b.getWidth();
+        int dx =  larguraSeta + larguraBloco;
+        
+        Point location = blocos.get(pos-1).getLocation();
+        
+        moveBlocosDireita(pos-1, dx);        
+        
+        b.setLocation(location);
+        
+        //insere uma Seta no fim
+        Bloco ultimo = blocos.get(blocos.size()-1);
+        Point posicaoSeta = new Point(ultimo.getLocation());        
+        posicaoSeta.translate(larguraBloco, Yseta);
+        insereSeta(posicaoSeta);
+    }
+    
+    private void insereFim(Bloco b){        
+        int larguraSeta = image.getIconWidth();
+        int larguraBloco = b.getWidth();
+        int xUltimoBloco = blocos.get(blocos.size()-1).getX();
+        int xFinal = xUltimoBloco + larguraSeta + larguraBloco;
+                
+        b.setLocation(xFinal, Ybloco);        
+        
+        //insere seta no fim
+        Point posicaoSeta = new Point(b.getLocation());
+        posicaoSeta.translate(larguraBloco, Yseta);
+        insereSeta(posicaoSeta);
+    }
+    
+    private void insereInicio(Bloco b){
+        int larguraSeta = image.getIconWidth();
+        int larguraBloco = b.getWidth();
+        int dx = larguraSeta + larguraBloco;
+        
+        moveBlocosDireita(0, dx);        
+        
+        b.setLocation(5, Ybloco);
+        
+        //inserir nova seta no fim
+        Point posicaoSeta = new Point(b.getLocation());       
+        if(lista.getTamanho() == 1)
+            posicaoSeta.translate(larguraBloco, Yseta);    
+        else{
+            dx = larguraSeta * setas.size();
+            dx += larguraBloco * lista.getTamanho();
+            posicaoSeta.translate(dx, Yseta);
+        }
+        insereSeta(posicaoSeta);
+    }
+    
+    private void insereSeta(Point posicao){
+        JLabel seta = new JLabel(image);
+        seta.setLocation(posicao);        
+        seta.setSize(image.getIconWidth(), image.getIconHeight());
+        
+        canvas.add(seta);        
+        setas.add(seta);
+    }
+    
+    private void moveSetasDireita(int pos, int dx){
+        JLabel seta;
+        Point location;
+        for (int i = pos; i < setas.size(); i++) {
+            seta = setas.get(i);
+            location = seta.getLocation();            
+            location.translate(dx, 0);
+            seta.setLocation(location);            
+        }        
     }
     
     /**
@@ -219,8 +312,8 @@ public class JanelaLSE extends javax.swing.JDialog {
             removerBorda();
         }
         
-        if (txtPosicao.getText().equals("") || txtValor.getText().equals("")){
-            //Erro se estiver vazio os campos.
+        //Erro se estiver vazio os campos.
+        if (txtPosicao.getText().equals("") || txtValor.getText().equals("")){            
             JOptionPane.showMessageDialog(null, "Campo(s) vazios", "Erro", HEIGHT);
             return;   
         }  
@@ -234,11 +327,11 @@ public class JanelaLSE extends javax.swing.JDialog {
         }
         
         int valor = Integer.parseInt(txtValor.getText());
-        int pos = 1;//ja começa com posiç?o 1 para o caso da lista vazia, para nao ser necessario digitar a posiç?o
+        int pos = 1;//ja começa com posicao 1 para o caso da lista vazia, para nao ser necessario digitar a posicao
         boolean ok = false;        
         
-        try{//aqui ele tenta inserir na lista com o valor e a posiç?o digitados.
-            // Se a lista tiver vazia e posiç?o foi digitada com valor diferente de 1, lança uma exceç?o.
+        try{//aqui ele tenta inserir na lista com o valor e a posicao digitados.
+            // Se a lista tiver vazia e posicao foi digitada com valor diferente de 1, lança uma excecao.
             if(!(txtPosicao.getText().equals("")))
                 pos = Integer.parseInt(txtPosicao.getText());
             
@@ -251,67 +344,35 @@ public class JanelaLSE extends javax.swing.JDialog {
         }
             
         if (ok) {
-            int y  = canvas.getSize().height;
-            y/=2;
-            y -= canvas.getY();
             Bloco b = new Bloco(); //Cria um novo bloco.        
             b.setValor(valor); //Coloca o valor que o usuario digitou no bloco.                         
-            b.setLocation(-120 + ((b.getSize().width + 75) * lista.getTamanho()), y); //Adiciona a lista.
-                            
+            
+            if(pos == 1)
+                insereInicio(b);
+            else if(pos == lista.getTamanho())            
+                insereFim(b);
+            else
+                insereMeio(b, pos);            
+            
+            blocos.add(pos-1, b);
             canvas.add(b); //Adiciona ao painel o bloco criado.
-            blocos.add(b);                 
-                        
-            Bloco c;                    
-            for (int i = pos; i < lista.getTamanho(); i++) {
-                try {
-                    c = blocos.get(i);
-                    c.setValor(lista.elemento(i+1));
-                    c.setBorder(bordaAmarela);                                    
-                } catch (Exception ex) {
-                }
-            }
-                
-            //loop pra ir adicionando a imagem da seta. (é um array de JLabel chamado seta)                
-                
-            for(int i = 0; i < lista.getTamanho()-1; i++){   
-                if(seta[i] == null){
-                    seta[i] = new JLabel();                        
-                    seta[i].setBounds(blocos.get(i).getLocation().x + blocos.get(i).getWidth() + 15 , blocos.get(i+1).getLocation().y + (blocos.get(i+1).getHeight()/2) - (image.getIconHeight()/2)  , 44, 34 );
-                    seta[i].setIcon(image); 
-                    canvas.add( seta[i] );
-                    canvas.repaint();  
-                }
-            }
+            b.setBorder(bordaVerde);
+            cor = true;
             
-            // Preenche o valor do bloco depois de determinado DELAY                    
-            Bloco bloco = blocos.get(pos-1);                                                                      
-            Timer t = new Timer(DELAY, new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {                            
-                    bloco.setBorder(BorderFactory.createLineBorder(Color.GREEN, 2));
-                    bloco.setValor(valor);                                                                                                    
-                    cor = true;
-                }
-            });
-            t.setRepeats(false);                    
-            if(lista.getTamanho() == 1)
-                t.setInitialDelay(0);
-            t.start();  
-            
+            canvas.repaint();
         }
         lblElementos.setText("" + lista.getTamanho()); //Atualiza o tamanho da lista.
     }//GEN-LAST:event_btnInserirActionPerformed
 
     private void btnRemoverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoverActionPerformed
-        // TODO add your handling code here:
         
         // Se a borda dos blocos ja estiver colorida, remove a borda
         if(cor){
             removerBorda();
         }
-                
-        if (txtPosicao.getText().equals("") || txtValor.getText().equals("")){
-            //Erro se estiver vazio os campos.
+        
+        //Erro se estiver vazio os campos.
+        if (txtPosicao.getText().equals("") || txtValor.getText().equals("")){        
             JOptionPane.showMessageDialog(null, "Campo(s) vazios", "Erro", HEIGHT);
             return;   
         } 
@@ -337,33 +398,39 @@ public class JanelaLSE extends javax.swing.JDialog {
             valor = lista.remove(pos);                    
                     
             final Bloco b = blocos.get(pos-1);
-            Bloco ultimo = blocos.get(lista.getTamanho());       
+            Bloco ultimo = blocos.get(lista.getTamanho());                           
+    
+            b.setBorder(bordaVermelha);            
+            
+            Timer t = new Timer(DELAY, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {                    
+                    b.setBorder(bordaVazia);
                     
-            b.setBorder(bordaVazia);
-            Bloco c;
-            for (int i = pos-1; i < lista.getTamanho(); i++) {
-                c = blocos.get(i);
-                try {
-                    c.setValor(lista.elemento(i+1));
-                    c.setBorder(bordaAmarela);
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(rootPane, ex.getMessage());
+                    Bloco c;
+                    for (int i = pos-1; i < lista.getTamanho(); i++) {
+                        c = blocos.get(i);
+                        try {
+                            c.setValor(lista.elemento(i+1));                            
+                        } catch (Exception ex) {
+                            JOptionPane.showMessageDialog(rootPane, ex.getMessage());
+                        }
+                    }
+                    
+                    cor = true;
+                    
+                    blocos.remove(ultimo);
+                    canvas.remove(ultimo);
+
+                    JLabel ultimaSeta = setas.get(setas.size()-1);
+                    setas.remove(ultimaSeta);
+                    canvas.remove(ultimaSeta);            
+                    
+                    canvas.repaint();
                 }
-            }
-                    
-            cor = true;
-                    
-            blocos.remove(ultimo);
-            canvas.remove(ultimo);
-                    
-                    
-            //quando chegar aqui, o elemento ja vai ter sido removido, entao se removeu posiçao 2, get tamanho = 1, e se removeu 1, tamanho = 0;           
-            if(lista.getTamanho() > 0){                      
-                canvas.remove(seta[lista.getTamanho()-1]);
-                seta[lista.getTamanho()-1] = null;
-            }  
-                    
-            canvas.repaint();                    
+            });
+            t.setRepeats(false);
+            t.start();
                     
             lblResultado.setText(""+valor);
             lblElementos.setText(""+lista.getTamanho());
@@ -375,8 +442,20 @@ public class JanelaLSE extends javax.swing.JDialog {
             }
     }//GEN-LAST:event_btnRemoverActionPerformed
 
+private void moveSetasEsquerda(int pos, int dx){
+    JLabel seta;
+    Point location;
+    for (int i = setas.size()-1; i >= pos; i--) {
+        seta = setas.get(i);
+        location = seta.getLocation();            
+        location.translate(-dx, 0);
+        seta.setLocation(location);            
+    }
+}
+    
+    
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        // TODO add your handling code here:
+        
         if(cor){
             removerBorda();                    
         }
@@ -392,7 +471,11 @@ public class JanelaLSE extends javax.swing.JDialog {
                     return;  
                 
                 pos = Integer.parseInt(s);                
-                valor = lista.elemento(pos);                
+                valor = lista.elemento(pos);     
+                
+                blocos.get(pos-1).setBorder(bordaAmarela);
+                cor = true;
+                
                 lblBusca.setText(String.format("%3d",valor)); 
             }
             else if(radioValor.isSelected()){
@@ -403,6 +486,12 @@ public class JanelaLSE extends javax.swing.JDialog {
                 
                 valor = Integer.parseInt(s);                
                 pos = lista.posiçao(valor);                                
+                
+                if(pos != -1){
+                    blocos.get(pos-1).setBorder(bordaAmarela);
+                    cor = true;
+                }
+                
                 lblBusca.setText(String.format("%3d",pos));
             }
         }catch (NumberFormatException ex) {

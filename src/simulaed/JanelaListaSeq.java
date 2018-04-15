@@ -124,7 +124,7 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
                     int pos = Integer.parseInt(s);
                     valor = lista.remove(pos);                    
                     
-                    simulaRemocao(pos,DELAY);
+                    simulaRemocao(pos,DELAY);                                        
                     
                     lblResultado.setText(""+valor);
                     lblNElementos.setText(""+lista.tamanho());
@@ -189,18 +189,21 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
     
     private void simulaRemocao(int pos, int mili){       
         final Bloco b = blocos.get(pos-1);
-        b.setBorder(bordaVermelha);                       
+        b.setBorder(bordaVermelha);
+        
+        btnRemover.setEnabled(false);
+        btnInserir.setEnabled(false);
         
         // Remove a borda e arrasta os valores dos blocos para a esquerda
         // depois de determinado DELAY
         Timer t = new Timer(mili, new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {                
+            public void actionPerformed(ActionEvent e) {                          
                 
                 b.setBorder(bordaVazia);
                 
                 Bloco c;
-                for (int i = pos-1; i < lista.tamanho(); i++) {
+                for (int i = pos-1; i < lista.tamanho(); i++) {                    
                     c = blocos.get(i);
                     try {
                         c.setValor(lista.elemento(i+1));
@@ -214,7 +217,10 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
                 Bloco ultimo = blocos.get(lista.tamanho());
                 ultimo.setBorder(bordaCinza);
                 ultimo.setEnabled(false);
-                ultimo.setContentAreaFilled(false);
+                ultimo.setContentAreaFilled(false);                
+                
+                btnRemover.setEnabled(true);
+                btnInserir.setEnabled(true);
             }
         });
         t.setRepeats(false);
