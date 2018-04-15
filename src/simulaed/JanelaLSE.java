@@ -27,6 +27,7 @@ public final class JanelaLSE extends javax.swing.JDialog {
     Border bordaAmarela = BorderFactory.createLineBorder(Color.YELLOW, 2);
     Border bordaVazia = BorderFactory.createEmptyBorder(); 
     Border bordaVermelha = BorderFactory.createLineBorder(Color.RED, 2);
+    Border bordaCinza    = BorderFactory.createLineBorder(Color.GRAY, 2);
     
     boolean cor;
     final int DELAY = 1500;
@@ -35,6 +36,10 @@ public final class JanelaLSE extends javax.swing.JDialog {
     
     int Ybloco;        
     int Yseta;
+    int larguraSeta;
+    int larguraBloco;
+    
+    Bloco pNull;
         
     public JanelaLSE(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -56,6 +61,18 @@ public final class JanelaLSE extends javax.swing.JDialog {
         
         buttonGroup1.add(radioPosicao);
         buttonGroup1.add(radioValor);        
+        
+        pNull = new Bloco();
+        pNull.setText("null");
+        pNull.setContentAreaFilled(false);
+        pNull.setBorder(bordaCinza);
+        pNull.setLocation(5, Ybloco);
+        pNull.setEnabled(false);
+        pNull.setVisible(false);
+        canvas.add(pNull);
+        
+        larguraSeta = image.getIconWidth();
+        larguraBloco = pNull.getWidth();
     }
     
     private void moveBlocosDireita(int pos, int dx){        
@@ -70,8 +87,6 @@ public final class JanelaLSE extends javax.swing.JDialog {
     }
     
     private void insereMeio(Bloco b, int pos){
-        int larguraSeta = image.getIconWidth();
-        int larguraBloco = b.getWidth();
         int dx =  larguraSeta + larguraBloco;
         
         Point location = blocos.get(pos-1).getLocation();
@@ -80,6 +95,8 @@ public final class JanelaLSE extends javax.swing.JDialog {
         
         b.setLocation(location);
         
+        moveBloco(pNull,dx);
+        
         //insere uma Seta no fim
         Bloco ultimo = blocos.get(blocos.size()-1);
         Point posicaoSeta = new Point(ultimo.getLocation());        
@@ -87,13 +104,13 @@ public final class JanelaLSE extends javax.swing.JDialog {
         insereSeta(posicaoSeta);
     }
     
-    private void insereFim(Bloco b){        
-        int larguraSeta = image.getIconWidth();
-        int larguraBloco = b.getWidth();
+    private void insereFim(Bloco b){                
         int xUltimoBloco = blocos.get(blocos.size()-1).getX();
         int xFinal = xUltimoBloco + larguraSeta + larguraBloco;
                 
-        b.setLocation(xFinal, Ybloco);        
+        b.setLocation(xFinal, Ybloco);
+        
+        moveBloco(pNull,(larguraSeta + larguraBloco));
         
         //insere seta no fim
         Point posicaoSeta = new Point(b.getLocation());
@@ -101,25 +118,26 @@ public final class JanelaLSE extends javax.swing.JDialog {
         insereSeta(posicaoSeta);
     }
     
-    private void insereInicio(Bloco b){
-        int larguraSeta = image.getIconWidth();
-        int larguraBloco = b.getWidth();
+    private void insereInicio(Bloco b){        
         int dx = larguraSeta + larguraBloco;
         
         moveBlocosDireita(0, dx);        
         
-        b.setLocation(5, Ybloco);
+        b.setLocation(5, Ybloco);        
+        
+        moveBloco(pNull, dx);
         
         //inserir nova seta no fim
         Point posicaoSeta = new Point(b.getLocation());       
-        if(lista.getTamanho() == 1)
-            posicaoSeta.translate(larguraBloco, Yseta);    
-        else{
+        if(lista.getTamanho() == 1){
+            posicaoSeta.translate(larguraBloco, Yseta);
+            pNull.setVisible(true);
+        }else{
             dx = larguraSeta * setas.size();
             dx += larguraBloco * lista.getTamanho();
             posicaoSeta.translate(dx, Yseta);
         }
-        insereSeta(posicaoSeta);
+        insereSeta(posicaoSeta);        
     }
     
     private void insereSeta(Point posicao){
@@ -131,15 +149,10 @@ public final class JanelaLSE extends javax.swing.JDialog {
         setas.add(seta);
     }
     
-    private void moveSetasDireita(int pos, int dx){
-        JLabel seta;
-        Point location;
-        for (int i = pos; i < setas.size(); i++) {
-            seta = setas.get(i);
-            location = seta.getLocation();            
-            location.translate(dx, 0);
-            seta.setLocation(location);            
-        }        
+    private void moveBloco(Bloco b, int dx){
+        Point posicao = b.getLocation();
+        posicao.translate(dx, 0);
+        b.setLocation(posicao);
     }
     
     /**
@@ -426,6 +439,11 @@ public final class JanelaLSE extends javax.swing.JDialog {
                     setas.remove(ultimaSeta);
                     canvas.remove(ultimaSeta);            
                     
+                    moveBloco(pNull, -(larguraSeta + larguraBloco));
+                    
+                    if(lista.vazia())
+                        pNull.setVisible(false);                    
+                    
                     canvas.repaint();
                 }
             });
@@ -441,18 +459,6 @@ public final class JanelaLSE extends javax.swing.JDialog {
                 JOptionPane.showMessageDialog(rootPane, ex.getMessage());
             }
     }//GEN-LAST:event_btnRemoverActionPerformed
-
-private void moveSetasEsquerda(int pos, int dx){
-    JLabel seta;
-    Point location;
-    for (int i = setas.size()-1; i >= pos; i--) {
-        seta = setas.get(i);
-        location = seta.getLocation();            
-        location.translate(-dx, 0);
-        seta.setLocation(location);            
-    }
-}
-    
     
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         

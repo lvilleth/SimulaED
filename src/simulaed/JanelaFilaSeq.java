@@ -28,7 +28,7 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
     Border bordaCinza    = BorderFactory.createLineBorder(Color.GRAY, 2);
     
     boolean cor;
-    final int DELAY = 2000;
+    final int DELAY = 1500;
     
     public JanelaFilaSeq(java.awt.Frame parent, boolean modal, int tamanho){
         super(parent, modal);
@@ -85,9 +85,9 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
                 try{
                     int valor = Integer.parseInt(v);
                     ok = fila.insere(valor);
-                    if(ok){
+                    if(ok){                        
                         simulaInsercao(valor, DELAY);
-                        txtValor.setText("");
+                        //txtValor.setText("");
                         lblNElementos.setText(""+fila.tamanho());
                         txtInicio.setText(""+fila.getInicio());
                         txtFim.setText(""+fila.getFim());
@@ -121,6 +121,9 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
                 
                 try {
                     valor = fila.remove();                    
+                    
+                    btnInserir.setEnabled(false);
+                    btnRemover.setEnabled(false);
                     
                     simulaRemocao(DELAY);
                     
@@ -164,13 +167,16 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
                 ultimo.setBorder(bordaCinza);
                 ultimo.setEnabled(false);
                 ultimo.setContentAreaFilled(false);
+                
+                btnInserir.setEnabled(true);
+                btnRemover.setEnabled(true);
             }
         });
         t.setRepeats(false);
         t.start();    
     }    
     
-    private void simulaInsercao(int valor, int mili){
+    private void simulaInsercao(int valor, int mili){        
         preencheBloco(valor, mili, bordaVerde);
     }
     
