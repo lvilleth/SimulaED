@@ -73,6 +73,15 @@ public final class MenuInicial extends javax.swing.JFrame {
                 janela.setVisible(true);
             }
         });
+        
+        btnLSE.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JanelaLSE janela = new JanelaLSE(MenuInicial.this, true);
+                janela.setVisible(true);
+            }
+        });
+        
     }
 
     /**
