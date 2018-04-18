@@ -34,6 +34,9 @@ public final class MenuInicial extends javax.swing.JFrame {
                 } catch(NumberFormatException ex){
                     return;
                 }
+                if(tam <= 0)
+                    return;
+                
                 JanelaListaSeq janela = new JanelaListaSeq(MenuInicial.this, true, tam);                
                 janela.setVisible(true);
             }
@@ -51,6 +54,9 @@ public final class MenuInicial extends javax.swing.JFrame {
                 } catch(NumberFormatException ex){
                     return;
                 }
+                if(tam <= 0)
+                    return;
+                
                 JanelaPilhaSeq janela = new JanelaPilhaSeq(MenuInicial.this, true, tam);
                 janela.setVisible(true);
                 
@@ -61,7 +67,7 @@ public final class MenuInicial extends javax.swing.JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int tam;
-                String s = JOptionPane.showInputDialog("Tamanho da Lista:");
+                String s = JOptionPane.showInputDialog("Tamanho da Fila:");
                 if(s == null || s.equals(""))
                     return;
                 try{
@@ -69,6 +75,9 @@ public final class MenuInicial extends javax.swing.JFrame {
                 } catch(NumberFormatException ex){
                     return;
                 }
+                if(tam <= 0)
+                    return;
+                
                 JanelaFilaSeq janela = new JanelaFilaSeq(MenuInicial.this, true, tam);
                 janela.setVisible(true);
             }

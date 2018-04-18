@@ -317,7 +317,7 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
 
         jLabel1.setText("Removido:");
 
-        lblResultado.setFont(new java.awt.Font("Arimo", 0, 36)); // NOI18N
+        lblResultado.setFont(new java.awt.Font("Arimo", 0, 28)); // NOI18N
         lblResultado.setText("---");
 
         lblelem.setText("N Elementos:");
@@ -344,12 +344,13 @@ public final class JanelaListaSeq extends javax.swing.JDialog {
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(canvasLayout.createSequentialGroup()
                 .addGap(18, 18, 18)
-                .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(lblResultado)
+                .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(lblelem)
-                        .addComponent(lblNElementos)))
+                        .addComponent(lblNElementos))
+                    .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel1)
+                        .addComponent(lblResultado)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
