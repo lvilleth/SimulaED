@@ -91,6 +91,14 @@ public final class MenuInicial extends javax.swing.JFrame {
             }
         });
         
+        btnABP.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JanelaABP janela = new JanelaABP(MenuInicial.this, true);
+                janela.setVisible(true);
+            }
+        });
+        
     }
 
     /**
@@ -106,6 +114,7 @@ public final class MenuInicial extends javax.swing.JFrame {
         btnListaSeq = new javax.swing.JButton();
         btnLSE = new javax.swing.JButton();
         btnPilha = new javax.swing.JButton();
+        btnABP = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -117,6 +126,8 @@ public final class MenuInicial extends javax.swing.JFrame {
 
         btnPilha.setText("Pilha");
 
+        btnABP.setText("ABP");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -125,6 +136,7 @@ public final class MenuInicial extends javax.swing.JFrame {
             .addComponent(btnLSE, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
             .addComponent(btnPilha, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
             .addComponent(btnFila, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(btnABP, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -137,7 +149,9 @@ public final class MenuInicial extends javax.swing.JFrame {
                 .addComponent(btnFila)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnPilha)
-                .addContainerGap(168, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnABP)
+                .addContainerGap(135, Short.MAX_VALUE))
         );
 
         pack();
@@ -179,6 +193,7 @@ public final class MenuInicial extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnABP;
     private javax.swing.JButton btnFila;
     private javax.swing.JButton btnLSE;
     private javax.swing.JButton btnListaSeq;
