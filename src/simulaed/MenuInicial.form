@@ -27,6 +27,7 @@
           <Component id="btnLSE" alignment="0" pref="167" max="32767" attributes="0"/>
           <Component id="btnPilha" alignment="0" pref="167" max="32767" attributes="0"/>
           <Component id="btnFila" alignment="0" max="32767" attributes="0"/>
+          <Component id="btnABP" alignment="0" pref="167" max="32767" attributes="0"/>
       </Group>
     </DimensionLayout>
     <DimensionLayout dim="1">
@@ -40,7 +41,9 @@
               <Component id="btnFila" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Component id="btnPilha" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="168" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="btnABP" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="135" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -64,6 +67,11 @@
     <Component class="javax.swing.JButton" name="btnPilha">
       <Properties>
         <Property name="text" type="java.lang.String" value="Pilha"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnABP">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="ABP"/>
       </Properties>
     </Component>
   </SubComponents>
