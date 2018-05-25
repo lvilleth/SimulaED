@@ -1,47 +1,43 @@
 package simulaed;
 
-import estruturas.ABP;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+import javax.swing.Icon;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 /**
  *
  * @author Leonardo Villeth
  */
 public class JanelaABP extends javax.swing.JDialog {
-
-    ABP arvore;
+    
     public static ArrayList<Circulo> circulos;
     
-    ABPCirculo arv;
+    private final ABPCirculo arvore;
     
-    ImageIcon linha_esq = new ImageIcon("linha_esq.png");    
-    ImageIcon linha_dir = new ImageIcon("linha_dir.png");    
-    ArrayList<JLabel> linhas;
+    private boolean cor = false;
+    private final int DELAY = 500;
     
-    // posicao x e y inicial (raiz da arvore)
-    int xi,yi;
-    
-    boolean cor = false;
+    private final Circulo visitados[];
+    private final Icon cores[];
+    private int cont = 0;
     
     public JanelaABP(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         configBtns();
         
-        super.setLocationRelativeTo(null);
-        
-        arvore = new ABP();
+        super.setTitle("Arvore Binaria de Pesquisa");
+        super.setLocationRelativeTo(null);        
+    
         circulos = new ArrayList<>();
-
-        xi = canvas.getWidth()/2;        
-        yi = 0;        
         
-        arv = new ABPCirculo();
+        arvore = new ABPCirculo();
+        
+        visitados = new Circulo[186];
+        cores = new Icon[186];
     }
     
     private void configBtns(){
@@ -59,7 +55,7 @@ public class JanelaABP extends javax.swing.JDialog {
                 Circulo c = new Circulo();
                 c.setValor(valor);                
                 
-                boolean ok = arv.insere(c);                
+                boolean ok = arvore.insere(c);                
                 
                 if(!ok)
                     return;
@@ -86,9 +82,34 @@ public class JanelaABP extends javax.swing.JDialog {
                 
                 Circulo c = new Circulo();
                 c.setValor(valor);
-                if(arv.busca(c) != null){
+                if(arvore.busca(c) != null){
                     cor = true;
                 }
+            }
+        });
+        
+        
+        btnIn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(cor){
+                    removeCor();
+                    cor = false;
+                }
+                
+                cont = 0;
+                arvore.exibe();
+
+                lblRetorna.setText("");
+                
+                int max = cont;                
+                for (int i = 0; i < max; i++) {                      
+                    Timer t1 = new Timer(DELAY*i, new MeuListener(i));
+                    t1.setRepeats(false);
+                    t1.start();
+                }
+                
+                
             }
         });
     }
@@ -98,8 +119,26 @@ public class JanelaABP extends javax.swing.JDialog {
             if(circulo.getIcon() != Circulo.BORDA_PRETA){
                 circulo.setIcon(Circulo.BORDA_PRETA);
             }
-        }
+        }    
+    }    
     
+    
+    private class MeuListener implements ActionListener{
+
+        private final int index;
+
+        private MeuListener(int index){
+            this.index = index;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {             
+            if(cores[index] == Circulo.BORDA_VERDE){
+                String s = lblRetorna.getText();                
+                lblRetorna.setText(s.concat("  ").concat(visitados[index].getText()));                
+            }
+            visitados[index].setIcon(cores[index]);                        
+        }
     }
 
     /**
@@ -160,28 +199,27 @@ public class JanelaABP extends javax.swing.JDialog {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(47, 47, 47)
-                .addComponent(lblRetorna)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(89, 89, 89)
+                        .addGap(11, 11, 11)
                         .addComponent(jLabel3))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(78, 78, 78)
-                        .addComponent(btnIn)))
-                .addContainerGap(816, Short.MAX_VALUE))
+                    .addComponent(btnIn))
+                .addGap(41, 41, 41)
+                .addComponent(lblRetorna)
+                .addContainerGap(888, Short.MAX_VALUE))
             .addComponent(canvas, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnIn))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnInserir)
                             .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -319,15 +357,50 @@ public class JanelaABP extends javax.swing.JDialog {
                 return 1 + Math.max(altura(T.getEsq()), altura(T.getDir()));
             }
         }
-
-
+        
         /**Exibe o conteúdo de uma árvore no formato in-ordem
             (preserva a ordenaç?o)*/
         private void exibe (No T){
-            if (T != null) {
+            if (T != null) {                
+                visitados[cont] = T.getDado();
+                cores[cont] = Circulo.BORDA_AMARELA;
+                cont++;
+                
+                // Apaga
+                visitados[cont] = T.getDado();
+                cores[cont] = Circulo.BORDA_PRETA;
+                cont++;
+                /////////
+                
+                //visita
                 exibe(T.getEsq());
-                System.out.print(" " + T.getDado());
-                exibe(T.getDir());
+                
+                visitados[cont] = T.getDado();
+                cores[cont] = Circulo.BORDA_VERDE;
+                cont++;
+                
+                // Apaga
+                visitados[cont] = T.getDado();
+                cores[cont] = Circulo.BORDA_PRETA;
+                cont++;
+                /////////
+                
+                //processa
+                //System.out.print(" " + T.getDado().getValor());
+
+                exibe(T.getDir());                
+                
+                visitados[cont] = T.getDado();
+                cores[cont] = Circulo.BORDA_AMARELA;
+                cont++;
+                
+                
+                // Apaga
+                visitados[cont] = T.getDado();
+                cores[cont] = Circulo.BORDA_PRETA;
+                cont++;
+                /////////                
+                
             }
         }
 
@@ -353,7 +426,7 @@ public class JanelaABP extends javax.swing.JDialog {
             if (raiz == null){ // Arvore vazia
                 raiz = novoNo;
                 raiz.index = 1;
-                valor.setLocation(xi, yi);
+                valor.setLocation(canvas.getWidth()/2, 0);
                 valor.setIcon(Circulo.BORDA_VERDE);
                 return true;
             }        

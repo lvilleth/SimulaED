@@ -96,34 +96,6 @@ public class ABP {
         return null;
     }
     
-    // Retorna o No pai do elemento com o valor dado
-    public No buscaPai(int valor){
-        if(raiz != null)
-            return buscaPai(raiz, valor);
-        
-        return null;
-    }
-    
-    private No buscaPai(No T, int valor){
-        if (T == null)
-            return null;
-        
-        No dir = T.getDir();
-        No esq = T.getEsq();
-        
-        if((dir != null) && (dir.getDado() == valor))
-            return T; 
-        
-        if((esq != null) && (esq.getDado() == valor))
-            return T; 
-        
-        if (valor < T.getDado())
-            return buscaPai(esq, valor);
-        else
-            return buscaPai(dir, valor);
-    
-    }
-    
     public int getAltura(){
         return altura(raiz);
     }
