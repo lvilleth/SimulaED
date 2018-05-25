@@ -45,7 +45,13 @@ public class JanelaABP extends javax.swing.JDialog {
         btnInserir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int valor = Integer.parseInt(txtValor.getText());
+                int valor;
+                try{
+                    valor = Integer.parseInt(txtValor.getText());
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(rootPane, "Valor invalido");
+                    return;
+                }
                 
                 if(cor){
                     removeCor();
@@ -74,7 +80,14 @@ public class JanelaABP extends javax.swing.JDialog {
         btnBuscar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int valor = Integer.parseInt(txtValor.getText());
+                int valor;
+                try{
+                    valor = Integer.parseInt(txtValor.getText());
+                }catch(Exception ex){
+                    JOptionPane.showMessageDialog(rootPane, "Valor invalido");
+                    return;
+                }
+                
                 if(cor){
                     removeCor();
                     cor = false;
