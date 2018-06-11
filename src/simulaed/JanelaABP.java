@@ -2,6 +2,10 @@ package simulaed;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
 import java.util.ArrayList;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
@@ -22,7 +26,7 @@ public class JanelaABP extends javax.swing.JDialog {
     
     private final Circulo visitados[];
     private final Icon cores[];
-    private int cont = 0;
+    private int cont = 0;    
     
     public JanelaABP(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -38,10 +42,34 @@ public class JanelaABP extends javax.swing.JDialog {
         
         visitados = new Circulo[186];
         cores = new Icon[186];
+        
+        super.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                if(circulos.isEmpty())
+                    return;                
+                
+                Circulo raiz = circulos.get(0);
+                int oldx = raiz.getX();                
+                raiz.setLocation(canvas.getWidth()/2, raiz.getY());                
+                int dx = oldx - raiz.getX();
+                
+                Circulo c;
+                for (int i = 1; i < circulos.size(); i++){
+                    c = circulos.get(i);
+                    oldx = c.getX();                    
+                    c.setLocation(oldx - dx, c.getY());                    
+                }
+                revalidate();
+                repaint();
+            }
+            
+        });
     }
     
     private void configBtns(){
-        
+        btnInserir.setMnemonic(KeyEvent.VK_I);
         btnInserir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,7 +104,7 @@ public class JanelaABP extends javax.swing.JDialog {
             }
         });
         
-        
+        btnBuscar.setMnemonic(KeyEvent.VK_B);
         btnBuscar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -101,7 +129,7 @@ public class JanelaABP extends javax.swing.JDialog {
             }
         });
         
-        
+        btnIn.setMnemonic(KeyEvent.VK_O);
         btnIn.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -419,7 +447,7 @@ public class JanelaABP extends javax.swing.JDialog {
 
         public void exibe() {
             if (raiz == null)
-                System.out.println("Arvore vazia");
+                JOptionPane.showMessageDialog(rootPane, "Arvore vazia");
             else
                 exibe(raiz);
         }
@@ -482,7 +510,7 @@ public class JanelaABP extends javax.swing.JDialog {
             }        
             
             if(p.getNivel() == 4){
-                JOptionPane.showMessageDialog(rootPane, "Altura maxima permitida: 5.");
+                JOptionPane.showMessageDialog(rootPane, "Altura maxima permitida: 4.");
                 return false;
             }
             

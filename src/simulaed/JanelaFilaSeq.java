@@ -70,7 +70,7 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
         btnInserir.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                
+                txtBusca.setText("---");
                 //Se a borda dos blocos ja estiver colorida, remove a borda
                 if(cor){
                     removerBorda();
@@ -107,6 +107,7 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
         btnRemover.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                txtBusca.setText("---");
                 
                 // Se a borda dos blocos ja estiver colorida, remove a borda
                 if(cor){
@@ -139,6 +140,31 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
                 }
             }
         });
+        
+        btnBuscar.setMnemonic(KeyEvent.VK_B);  
+        btnBuscar.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e){
+                
+                if(fila.vazia()){
+                    JOptionPane.showMessageDialog(rootPane, "Fila Vazia.");
+                    return;
+                }
+                try{
+                    txtBusca.setText(""+fila.primeiro());
+                    if(cor){
+                        removerBorda();                                 
+                        Bloco b = blocos.get(fila.getInicio());
+                        b.setBorder(bordaAmarela);
+                        cor = true;
+                    }
+                }catch (NumberFormatException ex){
+                    JOptionPane.showMessageDialog(rootPane, "Numero invalido.");                    
+                }catch (Exception ex) {
+                    JOptionPane.showMessageDialog(rootPane, ex.getMessage());                                        
+                }
+            }
+        });
     }
     
     
@@ -158,15 +184,10 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
                 b.setBorder(bordaVazia);
                 
                 cor = true;               
-                Bloco ultimo;
-                if(fila.getInicio() == 0 )
-                    ultimo = blocos.get(tamFila-1);
-                else
-                    ultimo = blocos.get(fila.getInicio()-1);
-                
-                ultimo.setBorder(bordaCinza);
-                ultimo.setEnabled(false);
-                ultimo.setContentAreaFilled(false);
+                    
+                b.setBorder(bordaCinza);
+                b.setEnabled(false);
+                b.setContentAreaFilled(false);
                 
                 btnInserir.setEnabled(true);
                 btnRemover.setEnabled(true);
@@ -230,6 +251,9 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
         lblInicio = new javax.swing.JLabel();
         lblFim = new javax.swing.JLabel();
         txtFim = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        txtBusca = new javax.swing.JLabel();
+        btnBuscar = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -239,7 +263,7 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
 
         jLabel1.setText("Removido:");
 
-        lblResultado.setFont(new java.awt.Font("Arimo", 0, 36)); // NOI18N
+        lblResultado.setFont(new java.awt.Font("Arimo", 0, 28)); // NOI18N
         lblResultado.setText("---");
 
         lblelem.setText("N Elementos:");
@@ -254,27 +278,24 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
             .addGroup(canvasLayout.createSequentialGroup()
                 .addGap(19, 19, 19)
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblResultado)
                 .addGap(40, 40, 40)
                 .addComponent(lblelem)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(lblNElementos)
-                .addContainerGap(530, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         canvasLayout.setVerticalGroup(
             canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(canvasLayout.createSequentialGroup()
-                .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(canvasLayout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addComponent(lblelem)))
-                    .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(lblResultado)
-                        .addComponent(lblNElementos)))
-                .addContainerGap(181, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(canvasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(jLabel1)
+                    .addComponent(lblResultado)
+                    .addComponent(lblelem)
+                    .addComponent(lblNElementos))
+                .addContainerGap(165, Short.MAX_VALUE))
         );
 
         lblValor.setText("Valor:");
@@ -289,55 +310,64 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
         txtFim.setFont(new java.awt.Font("Arimo", 0, 36)); // NOI18N
         txtFim.setText("---");
 
+        jLabel2.setText("Busca:");
+
+        txtBusca.setFont(new java.awt.Font("Arimo", 0, 36)); // NOI18N
+        txtBusca.setText("---");
+
+        btnBuscar.setText("Buscar");
+        btnBuscar.setMaximumSize(new java.awt.Dimension(77, 25));
+        btnBuscar.setMinimumSize(new java.awt.Dimension(77, 25));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(9, 9, 9)
+                .addContainerGap()
                 .addComponent(btnInserir, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnRemover)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(39, 39, 39)
                 .addComponent(lblValor)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(98, 98, 98)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(lblInicio)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtInicio)
                 .addGap(26, 26, 26)
                 .addComponent(lblFim)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(txtFim)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(23, 23, 23)
+                .addComponent(jLabel2)
+                .addGap(18, 18, 18)
+                .addComponent(txtBusca)
+                .addContainerGap(121, Short.MAX_VALUE))
             .addComponent(canvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtInicio)
-                                .addComponent(txtFim))
-                            .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btnInserir)
-                            .addComponent(btnRemover)
-                            .addComponent(lblValor)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(lblInicio))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(27, 27, 27)
-                        .addComponent(lblFim)))
-                .addGap(11, 11, 11)
-                .addComponent(canvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(lblValor)
+                    .addComponent(txtValor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(lblInicio)
+                    .addComponent(txtInicio)
+                    .addComponent(lblFim)
+                    .addComponent(txtFim)
+                    .addComponent(jLabel2)
+                    .addComponent(txtBusca)
+                    .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnRemover)
+                    .addComponent(btnInserir))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(canvas, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(19, 19, 19))
         );
 
         pack();
@@ -345,17 +375,20 @@ public final class JanelaFilaSeq extends javax.swing.JDialog {
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBuscar;
     private javax.swing.JButton btnInserir;
     private javax.swing.ButtonGroup btnRadioGroup;
     private javax.swing.JButton btnRemover;
     private javax.swing.JPanel canvas;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblFim;
     private javax.swing.JLabel lblInicio;
     private javax.swing.JLabel lblNElementos;
     private javax.swing.JLabel lblResultado;
     private javax.swing.JLabel lblValor;
     private javax.swing.JLabel lblelem;
+    private javax.swing.JLabel txtBusca;
     private javax.swing.JLabel txtFim;
     private javax.swing.JLabel txtInicio;
     private javax.swing.JTextField txtValor;
